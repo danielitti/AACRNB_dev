@@ -6,7 +6,6 @@ include: "*.view"
 # include all the dashboards
 include: "*.dashboard"
 
-explore: dim_date {}
 
 # - explore: dim_call_type
 
