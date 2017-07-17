@@ -7,62 +7,49 @@ include: "*.view"
 include: "*.dashboard"
 
 
-# - explore: dim_call_type
-
-# - explore: dim_contract_and_recurrence
-
-# - explore: dim_contract_type
-
-# - explore: dim_customer_type
-
-# - explore: dim_device_type
-
-# - explore: dim_digital_visit_type
-
-# - explore: dim_lead_code
-
-# - explore: dim_lead_group
-
-# - explore: dim_marketing_channel
-
-# - explore: dim_membership_type
-
-# - explore: dim_package
-
-# - explore: dim_payment_method
-
-# - explore: dim_policy_line
-
-# - explore: dim_policy_type
-
-# - explore: dim_recurrence_pattern
-
-# - explore: dim_sales_channel
-
-# - explore: dim_source_code
-
-# - explore: dim_source_system
-
-# - explore: dim_staff
-
-# - explore: dim_time
-
-# - explore: dim_transaction_type
-
-# - explore: fact_interaction_digital_visit
-
-# - explore: fact_interaction_inbound_call
-
-# - explore: fact_interaction_inbound_dial
-
-# - explore: fact_interaction_outbound_dial
-
-# - explore: fact_new_business_sale
-
-# - explore: fact_policy_snp
-
-# - explore: fact_policy_transaction
-
-# - explore: fact_policy_transaction_line
-
-# - explore: fact_staffing
+explore: new_business_sale {
+  join: policy_type {
+    type: inner
+    sql_on: ${new_business_sale.policy_type_level_2_key} = ${policy_type.policy_type_level_2_key} ;;
+    relationship: many_to_one
+  }
+  join: sales_channel {
+    type: inner
+    sql_on: ${new_business_sale.trans_sales_channel_level_2_key} = ${sales_channel.trans_sales_channel_level2_key} ;;
+    relationship: many_to_one
+  }
+  join: product_package {
+    type: inner
+    sql_on: ${new_business_sale.product_package_level_2_key} = ${product_package.product_pkg_level_2_key} ;;
+    relationship: many_to_one
+  }
+  join: contract_and_reccurence {
+    type: inner
+    sql_on: ${new_business_sale.contract_and_reccurence_key} = ${contract_and_reccurence.contract_and_reccurence_key} ;;
+    relationship: many_to_one
+  }
+  join: marketing_channel {
+    type: inner
+    sql_on: ${new_business_sale.source_code_key} = ${marketing_channel.source_code_key} ;;
+    relationship: many_to_one
+  }
+  join: device_type {
+    type: inner
+    sql_on: ${new_business_sale.device_type_key} = ${device_type.device_type_key} ;;
+    relationship: many_to_one
+  }
+  join: interaction_digital_visit {
+    type: full_outer
+    sql_on: ${new_business_sale.date_key} = ${interaction_digital_visit.date_key}
+            AND ${new_business_sale.accounting_treatmenr} = ${interaction_digital_visit.accounting_treatmenr}
+            AND ${new_business_sale.policy_type_level_2_key} = ${interaction_digital_visit.policy_type_level_2_key}
+            AND ${new_business_sale.device_type_key} = ${interaction_digital_visit.device_type_key}
+            AND ${marketing_channel.marketing_channel_level_2_key} = ${interaction_digital_visit.marketing_channel_level_2_key}
+            ;;
+    relationship: many_to_one
+  }
+  join:  date_filter {
+    type: cross
+    relationship: many_to_one
+  }
+}
