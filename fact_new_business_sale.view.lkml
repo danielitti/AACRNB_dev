@@ -94,7 +94,7 @@ view: new_business_sale {
                                 null as POLICY_KEY,
                                 null as FIRST_POLICY_KEY,
                                 null as TRANSACTION_TYPE_LEVEL_3_KEY,
-                                null as TRANS_SALES_CHANNEL_LEVEL2_KEY,
+                                5 as TRANS_SALES_CHANNEL_LEVEL2_KEY, --XXX NEED TO HAVE THIS IN THE FACT TABLE
                                 null as CUSTOMER_TYPE_KEY,
                                 3 as POLICY_TYPE_LEVEL_2_KEY, /* Assume Paid */
                                 null as CONTRACT_TYPE_LEVEL_2_KEY,
