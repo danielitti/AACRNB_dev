@@ -42,7 +42,7 @@ view: new_business_sale {
                                 null AS DIGITAL_VISIT_CNT,
                                 null AS INBOUND_DIAL_CNT,
                                 null AS OUTBOUND_DIAL_CNT
-                    FROM        SHARED_MRT.FACT_NEW_BUSINESS_SALE
+                    FROM        {{_user_attributes["commercial_road_new_business_schema_name"]}}.FACT_NEW_BUSINESS_SALE
 
                     UNION ALL
                     -- FACT_INTERACTION_INBOUND_CALL
@@ -81,7 +81,7 @@ view: new_business_sale {
                                 null AS DIGITAL_VISIT_CNT,
                                 null AS INBOUND_DIAL_CNT,
                                 null AS OUTBOUND_DIAL_CNT
-                    FROM        SHARED_MRT.FACT_INTERACTION_INBOUND_CALL
+                    FROM        {{_user_attributes["commercial_road_new_business_schema_name"]}}.FACT_INTERACTION_INBOUND_CALL
                     WHERE       CALL_TYPE_KEY = 1 /* Consumer Road New Business */
 
                     UNION ALL
@@ -121,7 +121,7 @@ view: new_business_sale {
                                 INTERACTION_CNT AS DIGITAL_VISIT_CNT,
                                 null AS INBOUND_DIAL_CNT,
                                 null AS OUTBOUND_DIAL_CNT
-                    FROM        SHARED_MRT.FACT_INTERACTION_DIGITAL_VISIT
+                    FROM        {{_user_attributes["commercial_road_new_business_schema_name"]}}.FACT_INTERACTION_DIGITAL_VISIT
                     WHERE       DIGITAL_VISIT_TYPE_KEY = 1 /* Consumer Road New Business */
 
                     UNION ALL
@@ -161,7 +161,7 @@ view: new_business_sale {
                                 null AS DIGITAL_VISIT_CNT,
                                 INTERACTION_CNT AS INBOUND_DIAL_CNT,
                                 null AS OUTBOUND_DIAL_CNT
-                    FROM        SHARED_MRT.FACT_INTERACTION_INBOUND_DIAL
+                    FROM        {{_user_attributes["commercial_road_new_business_schema_name"]}}.FACT_INTERACTION_INBOUND_DIAL
                     WHERE       CALL_TYPE_KEY = 1 /* Consumer Road New Business */
 
                     UNION ALL
@@ -201,7 +201,7 @@ view: new_business_sale {
                                 null AS DIGITAL_VISIT_CNT,
                                 null AS INBOUND_DIAL_CNT,
                                 INTERACTION_CNT AS OUTBOUND_DIAL_CNT
-                    FROM        SHARED_MRT.FACT_INTERACTION_OUTBOUND_DIAL
+                    FROM        {{_user_attributes["commercial_road_new_business_schema_name"]}}.FACT_INTERACTION_OUTBOUND_DIAL
                     WHERE       CALL_TYPE_KEY = 1 /* Consumer Road New Business */
                     ) FACTS
           INNER JOIN
@@ -217,7 +217,7 @@ view: new_business_sale {
                               TRADING_WEEK_START_DATE,
                               TRADING_WEEK_END_DATE,
                               FINANCIAL_YEAR_NAME
-                    FROM      SHARED_MRT.DIM_DATE) DIM_DATE
+                    FROM      {{_user_attributes["commercial_road_new_business_schema_name"]}}.DIM_DATE) DIM_DATE
           ON        FACTS.DATE_KEY = DIM_DATE.DIM_DATE_KEY
             ;;
   }
@@ -390,6 +390,13 @@ view: new_business_sale {
     sql: ${TABLE}.STAFF_KEY;;
   }
 
+  dimension: policy_key {
+    label: "Policy Key"
+    hidden: yes
+    type: string
+    sql: ${TABLE}.POLICY_KEY ;;
+  }
+
   dimension: lead_code_key {
     label: "Lead Code Key"
     hidden:  yes
@@ -462,7 +469,7 @@ view: new_business_sale {
   dimension: trdwk_number_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_number} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_number} END;;
   }
 
   dimension: trdwk_number_ly_by_date_filter {
@@ -474,13 +481,13 @@ view: new_business_sale {
   dimension: trdwk_day_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_day_number_of_week} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_day_number_of_week} END;;
   }
 
   dimension: trdwk_year_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_year} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.trdwk_year} END;;
   }
 
   dimension: trdwk_year_ly_by_date_filter {
@@ -492,19 +499,19 @@ view: new_business_sale {
   dimension: financial_year_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.financial_year} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.financial_year} END;;
   }
 
   dimension: financial_year_ly_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.financial_year_ly} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.financial_year_ly} END;;
   }
 
   dimension: financial_doy_by_date_filter {
     hidden:  yes
     type: string
-    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') THEN ${date_filter.financial_day_of_year} END;;
+    sql: CASE WHEN ${date_filter.date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') THEN ${date_filter.financial_day_of_year} END;;
   }
 
   ### Supporting dimensions for measure calculation
@@ -518,7 +525,8 @@ view: new_business_sale {
   dimension: is_selected_day {
     hidden: yes
     type: yesno
-    sql: ${trx_date_raw} = TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') ;;
+    sql: ${trx_date_raw} = TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') ;;
+    #sql: ${trx_date_raw} = ${date_filter_dimension} ;;
   }
 
   dimension: is_selected_trading_week {
@@ -560,13 +568,13 @@ view: new_business_sale {
   dimension: is_up_to_selected_day {
     hidden: yes
     type: yesno
-    sql: ${trx_date_raw} <= TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd') ;;
+    sql: ${trx_date_raw} <= TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd') ;;
   }
 
   dimension: is_up_to_selected_day_ly {
     hidden: yes
     type: yesno
-    sql: ${trx_date_raw} <= ADD_MONTHS(TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd'), -12) ;;
+    sql: ${trx_date_raw} <= ADD_MONTHS(TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd'), -12) ;;
   }
 
   dimension: is_selected_fy {
@@ -590,13 +598,13 @@ view: new_business_sale {
   dimension: is_selected_year_month {
     hidden: yes
     type: yesno
-    sql: CONCAT(EXTRACT(YEAR FROM ${trx_date_raw}), EXTRACT(MONTH FROM ${trx_date_raw})) = CONCAT(EXTRACT(YEAR FROM TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd')), EXTRACT(MONTH FROM TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd'))) ;;
+    sql: CONCAT(EXTRACT(YEAR FROM ${trx_date_raw}), EXTRACT(MONTH FROM ${trx_date_raw})) = CONCAT(EXTRACT(YEAR FROM TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd')), EXTRACT(MONTH FROM TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd'))) ;;
   }
 
   dimension: is_selected_year_month_ly {
     hidden: yes
     type: yesno
-    sql: CONCAT(EXTRACT(YEAR FROM ${trx_date_raw})+1, EXTRACT(MONTH FROM ${trx_date_raw})) = CONCAT(EXTRACT(YEAR FROM TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd')), EXTRACT(MONTH FROM TO_DATE({% parameter date_filter_parameter %}, 'yyyy/mm/dd'))) ;;
+    sql: CONCAT(EXTRACT(YEAR FROM ${trx_date_raw})+1, EXTRACT(MONTH FROM ${trx_date_raw})) = CONCAT(EXTRACT(YEAR FROM TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd')), EXTRACT(MONTH FROM TO_DATE(${date_filter_dimension}, 'yyyy/mm/dd'))) ;;
   }
 
 
@@ -605,11 +613,32 @@ view: new_business_sale {
   ###########################################################################################
 
   filter: date_filter_parameter {
-    label: "Date Filter"
+    label: "Date Filter Parameter"
     group_label: "Filters"
+    type: date
     suggest_dimension: trx_date_date
   }
 
+  dimension: date_filter_test {
+    type: string
+    sql: {% date_start date_filter_parameter %} ;;
+  }
+
+  dimension: date_filter_dimension {
+    label: "Date Filter Dimension"
+    #hidden: yes
+    type: date
+    sql: COALESCE({% date_start date_filter_parameter %},
+                  CASE  WHEN TO_CHAR(SYSDATE, 'DY') = 'MON' THEN TRUNC(SYSDATE-5)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'TUE' THEN TRUNC(SYSDATE-6)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'WED' THEN TRUNC(SYSDATE-7)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'THU' THEN TRUNC(SYSDATE-8)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'FRI' THEN TRUNC(SYSDATE-2)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'SAT' THEN TRUNC(SYSDATE-3)
+                        WHEN TO_CHAR(SYSDATE, 'DY') = 'SUN' THEN TRUNC(SYSDATE-4)
+                  END
+         );;
+  }
 
   filter: forecast_series_filter_parameter {
     label: "Forecast Series Identifier Filter"
