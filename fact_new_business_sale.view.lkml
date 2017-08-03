@@ -619,11 +619,6 @@ view: new_business_sale {
     suggest_dimension: trx_date_date
   }
 
-  dimension: date_filter_test {
-    type: string
-    sql: {% date_start date_filter_parameter %} ;;
-  }
-
   dimension: date_filter_dimension {
     label: "Date Filter Dimension"
     #hidden: yes
