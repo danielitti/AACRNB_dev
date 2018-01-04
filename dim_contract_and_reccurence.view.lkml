@@ -6,7 +6,7 @@ view: contract_and_reccurence {
   dimension: contract_and_reccurence_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.CONTRACT_AND_RECURRENCE_KEY ;;
   }
 

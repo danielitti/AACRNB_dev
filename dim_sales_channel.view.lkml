@@ -4,7 +4,7 @@ view: sales_channel {
   dimension: trans_sales_channel_level2_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.SALES_CHANNEL_LEVEL_2_KEY ;;
   }
 

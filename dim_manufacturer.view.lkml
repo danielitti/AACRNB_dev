@@ -4,7 +4,7 @@ view: manufacturer {
   dimension: manufacturer_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.MANUFACTURER_KEY ;;
   }
 

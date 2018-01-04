@@ -8,7 +8,7 @@ view: device_type {
   dimension: device_type_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.DEVICE_TYPE_KEY ;;
   }
 

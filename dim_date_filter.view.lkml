@@ -1,5 +1,7 @@
 view: date_filter {
   derived_table: {
+    #datagroup_trigger: dim_date_filter
+
     sql: SELECT   DATE_KEY,
                   DATE_DTTM,
                   TRADING_WEEK_NUMBER,
@@ -10,26 +12,19 @@ view: date_filter {
                   FINANCIAL_YEAR,
                   FINANCIAL_YEAR-1 AS FINANCIAL_YEAR_LY,
                   FINANCIAL_DAY_OF_YEAR,
-                  to_char(DATE_DTTM, 'Dy') || ' ' || TO_CHAR(DATE_DTTM, 'DD Mon YYYY') AS HEADER_DAY,
-                  to_char(TRADING_WEEK_START_DATE, 'Dy') || ' ' || TO_CHAR(TRADING_WEEK_START_DATE, 'DD Mon YYYY') AS HEADER_TW_START,
-                  to_char(TRADING_WEEK_END_DATE, 'Dy') || ' ' || TO_CHAR(TRADING_WEEK_END_DATE, 'DD Mon YYYY') AS HEADER_TW_END
+                  format(DATE_DTTM, 'ddd') + ' ' + convert(varchar,DATE_DTTM,106) AS HEADER_DAY,
+                  format(TRADING_WEEK_START_DATE, 'ddd') + ' ' + convert(varchar,TRADING_WEEK_START_DATE,106) AS HEADER_TW_START,
+                  format(TRADING_WEEK_END_DATE, 'ddd') + ' ' + convert(varchar,TRADING_WEEK_END_DATE,106) AS HEADER_TW_END
           FROM  {{_user_attributes["commercial_road_new_business_schema_name"]}}.DIM_DATE
           WHERE COALESCE({% date_start new_business_sale.date_filter_parameter %},
-                          CASE  WHEN TO_CHAR(SYSDATE, 'DY') = 'MON' THEN TRUNC(SYSDATE-5)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'TUE' THEN TRUNC(SYSDATE-6)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'WED' THEN TRUNC(SYSDATE-7)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'THU' THEN TRUNC(SYSDATE-8)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'FRI' THEN TRUNC(SYSDATE-2)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'SAT' THEN TRUNC(SYSDATE-3)
-                                        WHEN TO_CHAR(SYSDATE, 'DY') = 'SUN' THEN TRUNC(SYSDATE-4)
-                                  END ) =  DATE_DTTM
+                        (SELECT TRADING_PREVIOUS_WEEK_END_DATE FROM {{_user_attributes["commercial_road_new_business_schema_name"]}}.DIM_DATE WHERE convert(date,getdate()) = DATE_DTTM) ) =  DATE_DTTM
             ;;
   }
 
   dimension: date_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.DATE_KEY ;;
   }
 
@@ -107,4 +102,8 @@ view: date_filter {
     sql: ${TABLE}.HEADER_TW_END ;;
   }
 
+  dimension: selected_date {
+    type: string
+    sql: ${TABLE}.HEADER_DAY ;;
+  }
 }

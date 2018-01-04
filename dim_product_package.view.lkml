@@ -4,7 +4,7 @@ view: product_package {
   dimension: product_pkg_level_2_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.PACKAGE_LEVEL_2_KEY ;;
   }
 

@@ -8,7 +8,7 @@ view: policy {
   dimension: policy_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.POLICY_KEY ;;
   }
 

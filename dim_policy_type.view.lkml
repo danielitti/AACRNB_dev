@@ -4,7 +4,7 @@ view: policy_type {
   dimension: policy_type_level_2_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.POLICY_TYPE_LEVEL_2_KEY ;;
   }
 

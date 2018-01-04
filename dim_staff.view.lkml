@@ -4,7 +4,7 @@ view: staff {
   dimension: staff_key {
     primary_key: yes
     hidden: yes
-    type: string
+    type: number
     sql: ${TABLE}.STAFF_KEY ;;
   }
 
